@@ -22,11 +22,42 @@ impl Program {
         self.select_list()
     }
 
-    fn select_list(self) -> Self {
-        println!("Select a list or press 'e' to exit");
-        let list_index = prompt_number();
-        println!("{}", self.list_of_lists.display_list(list_index));
-        self.get_action(list_index)
+    fn select_list(mut self) -> Self {
+        println!("Enter a list index to see the details");
+        println!("Actions:a - add a new list / e - exit");
+        let input = prompt();
+        self = match input.as_str() {
+            "a" => {
+                self = self.create_list();
+            self
+        },
+            "e" => {
+                println!("Goodbye!");
+                process::exit(1);
+            },
+            x => {
+                let index = x.parse::<u32>();
+                self = match index {
+                    Ok(idx) => {
+                        self = self.display_list(idx);
+                        self
+                    },
+                    _ => {
+                        println!("Wut?");
+                        self = self.select_list();
+                        self
+                    }
+                };
+                self
+            }
+        };
+        self
+    }
+
+    fn display_list(mut self, index: u32) -> Self{
+        println!("{}", self.list_of_lists.display_list(index));
+        self = self.get_action(index);
+        self
     }
 
     fn get_action(mut self, list_index: u32) -> Self {
@@ -66,16 +97,26 @@ impl Program {
         self.list_of_lists.save_data(&"data.json".to_string());
         self
     }
+
+    fn create_list(mut self) -> Self {
+        println!("Enter the title of your new list:");
+        let title = prompt();
+        let index = self.list_of_lists.create_list(title);
+        self.list_of_lists.save_data(&"data.json".to_string());
+
+        self = self.display_list(index);
+        self
+    }
 }
 
-fn prompt_number() -> u32 {
-    let mut input = String::new();
-    io::stdin()
-        .read_line(&mut input)
-        .ok()
-        .expect("Couldn't read line");
-    input.split("\n").next().unwrap().parse::<u32>().unwrap()
-}
+// fn prompt_number() -> u32 {
+//     let mut input = String::new();
+//     io::stdin()
+//         .read_line(&mut input)
+//         .ok()
+//         .expect("Couldn't read line");
+//     input.split("\n").next().unwrap().parse::<u32>().unwrap()
+// }
 
 fn prompt() -> String {
     let mut input = String::new();

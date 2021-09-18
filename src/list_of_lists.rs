@@ -18,10 +18,11 @@ impl ListOfLists {
             .join("\n")
     }
 
-    pub fn create_list(&mut self, title: String) {
+    pub fn create_list(&mut self, title: String) -> u32{
         let next_index = self.next_index();
         let new_list = List::new(title.as_str(), next_index);
         self.lists.push(new_list);
+        next_index
     }
 
     pub fn add_item_to_list(&mut self, index: u32, item: String) {
