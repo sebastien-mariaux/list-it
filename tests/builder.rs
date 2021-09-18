@@ -2,7 +2,7 @@ use listit::builder::build_list_of_lists;
 
 #[test]
 fn test_build_data_from_file() {
-    let created = build_list_of_lists("test_data.json".to_string());
+    let created = build_list_of_lists("tests/test_data.json".to_string());
     assert_eq!(3, created.lists.len());
     assert_eq!(
         vec![
