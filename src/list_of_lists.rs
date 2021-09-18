@@ -1,7 +1,8 @@
-#![allow(unused)]
 
 use crate::list::List;
 use serde::{Deserialize, Serialize};
+use std::fs;
+use std::io::Write;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ListOfLists {
@@ -49,6 +50,29 @@ impl ListOfLists {
             Some(x) => x + 1,
             None => 1,
         }
+    }
+
+    fn serialize_data(&self) -> String {
+        let result = serde_json::to_string(self);
+        match result {
+            Ok(content) => content,
+            Err(x) => panic!("Warning: an error occured when saving data: {}", x),
+        }
+    }
+
+    fn write_data(&self, filename: &String, content: String) {
+        let file = fs::File::create(filename);
+        match file {
+            Ok(mut file) => {
+                write!(file, "{}", &content.as_str());
+            }
+            Err(x) => panic!("Warning: an error occured when saving data: {}", x),
+        }
+    }
+
+    pub fn save_data(&self, filename: &String) {
+        let data = self.serialize_data();
+        self.write_data(filename, data);
     }
 }
 
@@ -132,5 +156,20 @@ mod tests {
         let text = "\n-----------------\nAnimals\n-----------------\nCats\nDogs";
         let expected = String::from(text);
         assert_eq!(expected, list_of_lists.display_list(2));
+    }
+
+    #[test]
+    fn save_data() {
+        let list_of_lists = setup_list_of_list();
+        let filename = "tests/test_export.json";
+        fs::remove_file(&filename);
+        list_of_lists.save_data(&filename.to_string());
+        let written_content =
+            fs::read_to_string(filename).expect("Something went wrong reading the file");
+        let expected = String::from(
+            "{\"lists\":[{\"title\":\"Books\",\"index\":1,\"items\":[\"Porterhouse Blue (Tom Sharpe)\"\
+            ,\"La mécanique du coeur (Mathias Malzieu)\"]},\
+            {\"title\":\"Animals\",\"index\":2,\"items\":[\"Cats\",\"Dogs\"]}]}");
+        assert_eq!(expected, written_content);
     }
 }

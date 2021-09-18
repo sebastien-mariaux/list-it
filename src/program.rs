@@ -43,9 +43,9 @@ impl Program {
     fn do_list_action(mut self, action: String, list_index: u32) -> Self {
         match action.chars().next().unwrap() {
             'a' => {
-              self = self.add_item_to_list(list_index);
-              self.get_action(list_index)
-            },
+                self = self.add_item_to_list(list_index);
+                self.get_action(list_index)
+            }
             'b' => self.display_menu(),
             'e' => {
                 println!("Goodbye!");
@@ -63,6 +63,7 @@ impl Program {
         let item = prompt();
         self.list_of_lists.add_item_to_list(list_index, item);
         println!("{}", self.list_of_lists.display_list(list_index));
+        self.list_of_lists.save_data(&"data.json".to_string());
         self
     }
 }
