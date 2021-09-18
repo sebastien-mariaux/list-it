@@ -1,0 +1,33 @@
+{
+  "lists": [
+    {
+      "title": "Animaux",
+      "id": 1,
+      "items": [
+        "Chat",
+        "Chien",
+        "Rat",
+        "Panda",
+        "Lion"
+      ]
+    },
+    {"title": "Marques de voitures",
+      "id": 2,
+      "items": [
+      "Mustang",
+      "Porsche",
+      "Ferrari",
+      "Lamborgini"
+    ]},
+    {"title": "Courses",
+      "id": 3,
+      "items": [
+      "Pates",
+      "Carottes",
+      "PQ",
+      "Sauce tomate",
+      "Bière",
+      "Jus d'orange"
+    ]}
+  ]
+}
