@@ -29,19 +29,19 @@ impl Program {
         self = match input.as_str() {
             "a" => {
                 self = self.create_list();
-            self
-        },
+                self
+            }
             "e" => {
                 println!("Goodbye!");
                 process::exit(1);
-            },
+            }
             x => {
                 let index = x.parse::<u32>();
                 self = match index {
                     Ok(idx) => {
                         self = self.display_list(idx);
                         self
-                    },
+                    }
                     _ => {
                         println!("Wut?");
                         self = self.select_list();
@@ -54,7 +54,7 @@ impl Program {
         self
     }
 
-    fn display_list(mut self, index: u32) -> Self{
+    fn display_list(mut self, index: u32) -> Self {
         println!("{}", self.list_of_lists.display_list(index));
         self = self.get_action(index);
         self

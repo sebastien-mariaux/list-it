@@ -1,4 +1,3 @@
-
 use crate::list::List;
 use serde::{Deserialize, Serialize};
 use std::fs;
@@ -18,7 +17,7 @@ impl ListOfLists {
             .join("\n")
     }
 
-    pub fn create_list(&mut self, title: String) -> u32{
+    pub fn create_list(&mut self, title: String) -> u32 {
         let next_index = self.next_index();
         let new_list = List::new(title.as_str(), next_index);
         self.lists.push(new_list);
