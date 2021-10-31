@@ -60,7 +60,7 @@ impl ListOfLists {
         }
     }
 
-    fn write_data(&self, filename: &String, content: String) {
+    fn write_data(&self, filename: &str, content: String) {
         let file = fs::File::create(filename);
         match file {
             Ok(mut file) => {
@@ -70,7 +70,7 @@ impl ListOfLists {
         }
     }
 
-    pub fn save_data(&self, filename: &String) {
+    pub fn save_data(&self, filename: &str) {
         let data = self.serialize_data();
         self.write_data(filename, data);
     }

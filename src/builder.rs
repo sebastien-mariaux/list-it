@@ -2,7 +2,7 @@ use crate::list_of_lists::ListOfLists;
 use serde_json::Result;
 use std::fs;
 
-pub fn build_list_of_lists(data_file: &String) -> ListOfLists {
+pub fn build_list_of_lists(data_file: &str) -> ListOfLists {
     let raw_data = import_data(data_file);
     let lists = build_from_data(raw_data);
     match lists {
@@ -11,7 +11,7 @@ pub fn build_list_of_lists(data_file: &String) -> ListOfLists {
     }
 }
 
-fn import_data(data_file: &String) -> String {
+fn import_data(data_file: &str) -> String {
     let data = fs::read_to_string(data_file);
     match data {
         Ok(d) => d,

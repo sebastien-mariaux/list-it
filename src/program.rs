@@ -12,9 +12,12 @@ pub struct Program {
 impl Program {
     const SEPARATOR: &'static str = "--------------------";
 
-    pub fn new(data_file: &String) -> Self {
+    pub fn new(data_file: &str) -> Self {
         let list_of_lists = build_list_of_lists(data_file);
-        Program { list_of_lists, data_file: data_file.to_owned() }
+        Program {
+            list_of_lists,
+            data_file: data_file.to_owned(),
+        }
     }
 
     pub fn display_menu(self) -> Self {
@@ -86,11 +89,8 @@ impl Program {
     fn get_action(mut self, list_index: u32) -> Self {
         println!("------------------------");
         println!("a - Add an item / b - back to menu / e - exit");
-        self = loop {
-            let action = prompt();
-            self = self.handle_user_input_for_list(action, list_index);
-            break (self);
-        };
+        let action = prompt();
+        self = self.handle_user_input_for_list(action, list_index);
         self
     }
 
@@ -147,13 +147,12 @@ fn prompt() -> String {
     let mut input = String::new();
     io::stdin()
         .read_line(&mut input)
-        .ok()
         .expect("Couldn't read line");
-    input.split("\n").next().unwrap().to_string()
+    input.split('\n').next().unwrap().to_string()
 }
 
 mod tests {
-    use super::*;
+    use super::Program;
 
     #[test]
     fn build_menu() {
@@ -177,5 +176,4 @@ mod tests {
         --------------------";
         assert_eq!(expected, program.build_menu());
     }
-
 }
