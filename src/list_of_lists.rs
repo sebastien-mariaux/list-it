@@ -24,6 +24,16 @@ impl ListOfLists {
         next_index
     }
 
+    pub fn delete_list(&mut self, remove_index: u32) {
+        if let Some(index) = self
+            .lists
+            .iter()
+            .position(|list| list.index == remove_index)
+        {
+            self.lists.remove(index);
+        }
+    }
+
     pub fn add_item_to_list(&mut self, index: u32, item: String) {
         let list = self.lists.iter_mut().find(|list| list.index == index);
         match list {
@@ -177,5 +187,14 @@ mod tests {
             ,\"La mécanique du coeur (Mathias Malzieu)\"]},\
             {\"title\":\"Animals\",\"index\":2,\"items\":[\"Cats\",\"Dogs\"]}]}");
         assert_eq!(expected, written_content);
+    }
+
+    #[test]
+    fn delete_list() {
+        let mut list_of_lists = setup_list_of_list();
+        assert_eq!(2, list_of_lists.lists.len());
+        let deletion = list_of_lists.delete_list(2);
+        assert_eq!(1, list_of_lists.lists.len());
+        assert_eq!("Books", list_of_lists.lists.first().unwrap().title);
     }
 }

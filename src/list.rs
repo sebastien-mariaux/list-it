@@ -27,6 +27,12 @@ impl List {
     pub fn display_items(&self) -> String {
         self.items.join("\n")
     }
+
+    pub fn delete_item(&mut self, item_delete: String) {
+        if let Some(index) = self.items.iter().position(|item| item == &item_delete) {
+            self.items.remove(index);
+        }
+    }
 }
 
 #[cfg(test)]
@@ -73,5 +79,16 @@ mod tests {
             "La mécanique du coeur (Mathias Malzieu)",
         ];
         assert_eq!(expected, list.items);
+    }
+
+    #[test]
+    fn delete_item() {
+        let mut list = List {
+            title: "Animals".to_string(),
+            index: 3,
+            items: vec!["Cats".to_string(), "Dogs".to_string()],
+        };
+        list.delete_item("Cats".to_string());
+        assert_eq!(vec!["Dogs"], list.items);
     }
 }

@@ -36,7 +36,7 @@ impl Program {
 
     fn select_list(mut self) -> Self {
         println!("Enter a list index to see the details");
-        println!("Actions:a - add a new list / e - exit");
+        println!("Actions:a - add a new list / d - delete a list / e - exit");
         let input = prompt();
         self = self.do_menu_action(input);
         self
@@ -46,6 +46,10 @@ impl Program {
         match input.as_str() {
             "a" => {
                 self = self.create_list();
+                self
+            }
+            "d" => {
+                self = self.delete_list();
                 self
             }
             "e" => {
@@ -139,6 +143,21 @@ impl Program {
         self.list_of_lists.save_data(&self.data_file.to_string());
 
         self = self.display_list(index);
+        self
+    }
+
+    fn delete_list(mut self) -> Self {
+        println!("Which list would you like to delete ? (Enter index)");
+        let index = prompt().parse();
+        match index {
+            Ok(number) => {
+                self.list_of_lists.delete_list(number);
+                self.list_of_lists.save_data(&self.data_file.to_string());
+                println!("This list if gone forever...");
+            }
+            Err(_) => println!("List not found, try again!"),
+        }
+        self = self.display_menu();
         self
     }
 }
