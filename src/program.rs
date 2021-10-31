@@ -92,7 +92,7 @@ impl Program {
 
     fn get_action(mut self, list_index: u32) -> Self {
         println!("------------------------");
-        println!("a - Add an item / b - back to menu / e - exit");
+        println!("a - Add an item / b - back to menu / d - Delete an item / e - exit");
         let action = prompt();
         self = self.handle_user_input_for_list(action, list_index);
         self
@@ -116,6 +116,10 @@ impl Program {
                 self.get_action(list_index)
             }
             'b' => self.display_menu(),
+            'd' => {
+                self = self.delete_item(list_index);
+                self.get_action(list_index)
+            }
             'e' => {
                 println!("Goodbye!");
                 process::exit(1);
@@ -158,6 +162,15 @@ impl Program {
             Err(_) => println!("List not found, try again!"),
         }
         self = self.display_menu();
+        self
+    }
+
+    fn delete_item(mut self, list_index: u32) -> Self {
+        println!("Enter the item you would like to delete");
+        let item = prompt();
+        self.list_of_lists.remove_item_from_list(list_index, item);
+        self.list_of_lists.save_data(&self.data_file.to_string());
+        self = self.display_list(list_index);
         self
     }
 }

@@ -42,6 +42,14 @@ impl ListOfLists {
         }
     }
 
+    pub fn remove_item_from_list(&mut self, index: u32, item: String) {
+        let list = self.lists.iter_mut().find(|list| list.index == index);
+        match list {
+            Some(l) => l.delete_item(item),
+            None => println!("Oh my... We couldn't find this list"),
+        }
+    }
+
     pub fn display_list(&self, index: u32) -> Option<String> {
         let list = self.lists.iter().find(|list| list.index == index);
         match list {
