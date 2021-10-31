@@ -32,15 +32,15 @@ impl ListOfLists {
         }
     }
 
-    pub fn display_list(&self, index: u32) -> String {
+    pub fn display_list(&self, index: u32) -> Option<String> {
         let list = self.lists.iter().find(|list| list.index == index);
         match list {
-            Some(l) => format!(
+            Some(l) => Some(format!(
                 "\n-----------------\n{}\n-----------------\n{}",
                 l.title,
                 l.display_items()
-            ),
-            None => String::default(),
+            )),
+            None => None,
         }
     }
 
@@ -155,7 +155,13 @@ mod tests {
         let list_of_lists = setup_list_of_list();
         let text = "\n-----------------\nAnimals\n-----------------\nCats\nDogs";
         let expected = String::from(text);
-        assert_eq!(expected, list_of_lists.display_list(2));
+        assert_eq!(expected, list_of_lists.display_list(2).unwrap());
+    }
+
+    #[test]
+    fn not_display_list() {
+        let list_of_lists = setup_list_of_list();
+        assert!(list_of_lists.display_list(10).is_none());
     }
 
     #[test]

@@ -1,32 +1,46 @@
 use crate::builder::build_list_of_lists;
+use crate::list;
 use crate::list_of_lists::ListOfLists;
 use std::io;
 use std::process;
 
 pub struct Program {
     list_of_lists: ListOfLists,
+    data_file: String,
 }
 
 impl Program {
-    pub fn new() -> Self {
-        let list_of_lists = build_list_of_lists("data.json".to_string());
-        Program { list_of_lists }
+    const SEPARATOR: &'static str = "--------------------";
+
+    pub fn new(data_file: &String) -> Self {
+        let list_of_lists = build_list_of_lists(data_file);
+        Program { list_of_lists, data_file: data_file.to_owned() }
     }
 
     pub fn display_menu(self) -> Self {
-        println!("\n------------------------");
-        println!("Here are all yours lists:");
-        println!("------------------------");
-        println!("{}", &self.list_of_lists.display_titles());
-        println!("------------------------");
+        let menu = self.build_menu();
+        println!("{}", menu);
         self.select_list()
+    }
+
+    fn build_menu(&self) -> String {
+        format!(
+            "\n{sep}\nHere are all yours lists:\n{sep}\n{titles}\n{sep}",
+            sep = Program::SEPARATOR,
+            titles = &self.list_of_lists.display_titles()
+        )
     }
 
     fn select_list(mut self) -> Self {
         println!("Enter a list index to see the details");
         println!("Actions:a - add a new list / e - exit");
         let input = prompt();
-        self = match input.as_str() {
+        self = self.do_menu_action(input);
+        self
+    }
+
+    fn do_menu_action(mut self, input: String) -> Self {
+        match input.as_str() {
             "a" => {
                 self = self.create_list();
                 self
@@ -50,14 +64,23 @@ impl Program {
                 };
                 self
             }
-        };
-        self
+        }
     }
 
     fn display_list(mut self, index: u32) -> Self {
-        println!("{}", self.list_of_lists.display_list(index));
-        self = self.get_action(index);
-        self
+        let text = self.list_of_lists.display_list(index);
+        match text {
+            Some(x) => {
+                println!("{}", x);
+                self = self.get_action(index);
+                self
+            }
+            None => {
+                println!("List does not exist!");
+                self = self.select_list();
+                self
+            }
+        }
     }
 
     fn get_action(mut self, list_index: u32) -> Self {
@@ -65,14 +88,25 @@ impl Program {
         println!("a - Add an item / b - back to menu / e - exit");
         self = loop {
             let action = prompt();
-            self = self.do_list_action(action, list_index);
+            self = self.handle_user_input_for_list(action, list_index);
             break (self);
         };
         self
     }
 
-    fn do_list_action(mut self, action: String, list_index: u32) -> Self {
-        match action.chars().next().unwrap() {
+    fn handle_user_input_for_list(self, input: String, list_index: u32) -> Self {
+        let input = input.chars().next();
+        match input {
+            Some(action) => self.handle_list_action(action, list_index),
+            None => {
+                println!("Wut?");
+                self.get_action(list_index)
+            }
+        }
+    }
+
+    fn handle_list_action(mut self, action: char, list_index: u32) -> Self {
+        match action {
             'a' => {
                 self = self.add_item_to_list(list_index);
                 self.get_action(list_index)
@@ -93,8 +127,8 @@ impl Program {
         println!("Enter the new item:");
         let item = prompt();
         self.list_of_lists.add_item_to_list(list_index, item);
-        println!("{}", self.list_of_lists.display_list(list_index));
-        self.list_of_lists.save_data(&"data.json".to_string());
+        self.list_of_lists.save_data(&self.data_file.to_string());
+        self = self.display_list(list_index);
         self
     }
 
@@ -102,21 +136,12 @@ impl Program {
         println!("Enter the title of your new list:");
         let title = prompt();
         let index = self.list_of_lists.create_list(title);
-        self.list_of_lists.save_data(&"data.json".to_string());
+        self.list_of_lists.save_data(&self.data_file.to_string());
 
         self = self.display_list(index);
         self
     }
 }
-
-// fn prompt_number() -> u32 {
-//     let mut input = String::new();
-//     io::stdin()
-//         .read_line(&mut input)
-//         .ok()
-//         .expect("Couldn't read line");
-//     input.split("\n").next().unwrap().parse::<u32>().unwrap()
-// }
 
 fn prompt() -> String {
     let mut input = String::new();
@@ -125,4 +150,32 @@ fn prompt() -> String {
         .ok()
         .expect("Couldn't read line");
     input.split("\n").next().unwrap().to_string()
+}
+
+mod tests {
+    use super::*;
+
+    #[test]
+    fn build_menu() {
+        let program = Program::new(&"tests/test_data.json".to_string());
+        let expected = "\n--------------------\n\
+        Here are all yours lists:\n\
+        --------------------\n\
+        1 - Animaux\n\
+        2 - Marques de voitures\n\
+        3 - Courses\n\
+        --------------------";
+        assert_eq!(expected, program.build_menu());
+    }
+
+    #[test]
+    fn build_menu_from_empty_data() {
+        let program = Program::new(&"tests/missing_data.json".to_string());
+        let expected = "\n--------------------\n\
+        Here are all yours lists:\n\
+        --------------------\n\n\
+        --------------------";
+        assert_eq!(expected, program.build_menu());
+    }
+
 }
